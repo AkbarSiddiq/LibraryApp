@@ -8,6 +8,8 @@ import { getStorage, ref, uploadBytes, getDownloadURL, listAll, list } from "fir
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { v4 } from "uuid";
+import { async } from "@firebase/util";
+import { data } from "autoprefixer";
 
 export default function Home() {
   const [title, setTitle] = useState("");
@@ -86,15 +88,17 @@ export default function Home() {
         setIsUpdate(false);
       })
       .catch((err) => {
-        console.log(err);
+        alert(err);
       });
   };
-  const borrow = () => {
-    const decrement = doc(database, "Books", ID);
-    updateDoc(decrement, {
-      availibility: Number(availibility) - 1,
+
+  const updateAvailibility = (id) => {
+    let availRef = doc(database, "books", id);
+    updateDoc(availRef, {
+      availibility: increment(-1),
     });
   };
+
   const deleteDocument = (id) => {
     let fieldToEdit = doc(database, "books", id);
     deleteDoc(fieldToEdit)
@@ -199,7 +203,7 @@ export default function Home() {
                       <button class="px-3 py-2 bg-gray-800 text-white text-xs font-bold uppercase rounded" onClick={() => deleteDocument(data.id)}>
                         Delete
                       </button>
-                      <button class="px-3 py-2 bg-gray-800 text-white text-xs font-bold uppercase rounded" onClick={borrow}>
+                      <button class="px-3 py-2 bg-gray-800 text-white text-xs font-bold uppercase rounded" onClick={() => updateAvailibility}>
                         Borrow
                       </button>
                     </div>
